@@ -1,32 +1,100 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Overclock Fitness POS</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
-</head>
-<body class="bg-dark text-white">
-    <nav class="navbar navbar-dark bg-black px-4">
-        <span class="navbar-brand">Overclock Fitness POS</span>
 
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="btn btn-outline-light">Log out</button>
-        </form>
-    </nav>
+@extends('layouts.pos')
 
-    <main class="container py-5">
-        <h1>POS Dashboard</h1>
-        <p>Welcome, {{ auth()->user()->username }}.</p>
+@section('title', 'Dashboard')
+@section('heading', 'Dashboard Overview')
 
-        <div class="row g-3 mt-3">
-            <div class="col-md-4"><div class="card p-4">New Sale</div></div>
-            <div class="col-md-4"><div class="card p-4">Products</div></div>
-            <div class="col-md-4"><div class="card p-4">Sales History</div></div>
-            <div class="col-md-4"><div class="card p-4">Memberships</div></div>
+@section('content')
+
+<div class="page-heading">
+    <div>
+        <h1>Good day, {{ auth()->user()->username ?? auth()->user()->name ?? 'Staff' }}!</h1>
+        <p class="muted">
+            Here's what's happening with your Overclock store today.
+        </p>
+    </div>
+
+    <a href="{{ route('sales.create') }}" class="btn">
+        + New Transaction
+    </a>
+</div>
+
+<div class="stats">
+
+    <div class="card">
+        <div class="stat-icon">₱</div>
+        <div class="stat-label">Today's Revenue</div>
+        <div class="stat-value">
+            ₱{{ number_format((float)$todaySales, 2) }}
         </div>
-    </main>
-</body>
-</html>
+    </div>
+
+    <div class="card">
+        <div class="stat-icon">▤</div>
+        <div class="stat-label">Transactions Today</div>
+        <div class="stat-value">{{ $todayTransactions }}</div>
+    </div>
+
+    <div class="card">
+        <div class="stat-icon">▦</div>
+        <div class="stat-label">Total Products</div>
+        <div class="stat-value">{{ $totalProducts }}</div>
+    </div>
+
+    <div class="card">
+        <div class="stat-icon">⚠</div>
+        <div class="stat-label">Low Stock Items</div>
+        <div class="stat-value">{{ $lowStock }}</div>
+    </div>
+
+</div>
+
+<div class="panel card">
+    <div class="panel-title">Recent Transactions</div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Receipt</th>
+                    <th>Product</th>
+                    <th>Customer</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @forelse($recentSales as $sale)
+                    <tr>
+                        <td>#{{ str_pad($sale->id, 5, '0', STR_PAD_LEFT) }}</td>
+                        <td>{{ $sale->product?->name ?? 'Unavailable' }}</td>
+                        <td>{{ $sale->customer?->full_name ?? 'Walk-in' }}</td>
+                        <td>{{ $sale->quantity }}</td>
+                        <td>₱{{ number_format((float)$sale->total_price, 2) }}</td>
+                        <td>{{ $sale->created_at->format('M d, Y') }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" style="text-align:center;padding:30px">
+                            No transactions recorded yet.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-title">Quick Actions</div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="{{ route('products.create') }}" class="btn">+ Add Product</a>
+        <a href="{{ route('customers.create') }}" class="btn">+ Add Customer</a>
+        <a href="{{ route('sales.create') }}" class="btn">+ Process Sale</a>
+    </div>
+</div>
+
+@endsection
