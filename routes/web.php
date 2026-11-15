@@ -1,58 +1,74 @@
 <?php
 
-use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\MemberPortalController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SaleController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
+// Smart Home Redirect: sends logged-in users to their own role dashboard
 Route::get('/', function () {
-    return redirect()->route('register');
+    if (Auth::check()) {
+        return match (Auth::user()->role) {
+            'admin'  => redirect()->route('pos.dashboard'),
+            'client' => redirect()->route('member.portal'),
+            default  => redirect()->route('pos.dashboard'),
+        };
+    }
+
+    return redirect()->route('login');
 });
 
-Route::get('/pos', function () {
-    $todaySales = \App\Models\Sale::whereDate('created_at', today())
-        ->sum('total_price');
+// Guest Auth Routes
+Route::middleware('guest')->group(function () {
+    Route::view('/register', 'auth.register')->name('register');
+    Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
 
-    $todayTransactions = \App\Models\Sale::whereDate('created_at', today())
-        ->count();
+    Route::view('/login', 'auth.login')->name('login');
+    Route::post('/login', [LoginController::class, 'store'])->name('login.store');
+});
 
-    $totalProducts = \App\Models\Product::count();
-
-    $lowStock = \App\Models\Product::where('stock_quantity', '<=', 5)
-        ->count();
-
-    $recentSales = \App\Models\Sale::with(['product', 'customer'])
-        ->latest()
-        ->take(5)
-        ->get();
-
-    return view('pos.dashboard', compact(
-        'todaySales',
-        'todayTransactions',
-        'totalProducts',
-        'lowStock',
-        'recentSales'
-    ));
-
-})->middleware('auth')->name('pos.dashboard');
-
-
-Route::view('/register', 'auth.register')->name('register');
-Route::post('/register', [RegisterController::class, 'store'])
-    ->name('register.store');
-
-Route::post('/login', [LoginController::class, 'store'])
-    ->name('login.store');
 Route::post('/logout', [LoginController::class, 'destroy'])
-    ->middleware('auth')->name('logout');
+    ->middleware('auth')
+    ->name('logout');
 
-Route::view('/login', 'auth.login')->name('login');
+// CLIENT / MEMBER PORTAL ROUTES (Clients Only)
+Route::middleware(['auth', 'role:client'])->prefix('member')->name('member.')->group(function () {
+    Route::get('/portal', [MemberPortalController::class, 'index'])->name('portal');
+    Route::post('/bookings', [MemberPortalController::class, 'storeBooking'])->name('bookings.store');
+    Route::patch('/bookings/{booking}/cancel', [MemberPortalController::class, 'cancelBooking'])->name('bookings.cancel');
+});
 
+// STAFF & BOSS POS MODULE ROUTES (Locked from Clients)
+Route::middleware(['auth', 'role:admin,staff'])->group(function () {
+    Route::get('/pos', function () {
+        $todaySales = \App\Models\Sale::whereDate('created_at', today())
+            ->sum('total_price');
 
-// POS MODULE ROUTES
-Route::middleware('auth')->group(function () {
+        $todayTransactions = \App\Models\Sale::whereDate('created_at', today())
+            ->count();
+
+        $totalProducts = \App\Models\Product::count();
+
+        $lowStock = \App\Models\Product::where('stock_quantity', '<=', 5)
+            ->count();
+
+        $recentSales = \App\Models\Sale::with(['product', 'customer'])
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('pos.dashboard', compact(
+            'todaySales',
+            'todayTransactions',
+            'totalProducts',
+            'lowStock',
+            'recentSales'
+        ));
+    })->name('pos.dashboard');
 
     // Products
     Route::resource('products', ProductController::class);
@@ -61,13 +77,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('customers', CustomerController::class);
 
     // Sales
-    Route::get('/sales/create', [SaleController::class, 'create'])
-        ->name('sales.create');
-
-    Route::post('/sales', [SaleController::class, 'store'])
-        ->name('sales.store');
-
-    Route::get('/sales', [SaleController::class, 'index'])
-        ->name('sales.index');
-
+    Route::get('/sales/create', [SaleController::class, 'create'])->name('sales.create');
+    Route::post('/sales', [SaleController::class, 'store'])->name('sales.store');
+    Route::get('/sales', [SaleController::class, 'index'])->name('sales.index');
 });

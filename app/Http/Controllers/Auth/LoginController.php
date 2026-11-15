@@ -9,22 +9,26 @@ use Illuminate\Support\Facades\Auth;
 class LoginController extends Controller
 {
     public function store(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ]);
+{
+    $credentials = $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required', 'string'],
+    ]);
 
-        if (! Auth::attempt($credentials)) {
-            return back()
-                ->withErrors(['email' => 'Email or password is incorrect.'])
-                ->onlyInput('email');
-        }
-
-        $request->session()->regenerate();
-
-        return redirect()->intended(route('pos.dashboard'));
+    if (! Auth::attempt($credentials)) {
+        return back()
+            ->withErrors(['email' => 'Email or password is incorrect.'])
+            ->onlyInput('email');
     }
+
+    $request->session()->regenerate();
+
+    return match ($request->user()->role) {
+    'admin'  => redirect()->route('pos.dashboard'),
+    'client' => redirect()->route('member.portal'),
+    default  => redirect()->route('pos.dashboard'),
+    };
+}
 
     public function destroy(Request $request)
     {
