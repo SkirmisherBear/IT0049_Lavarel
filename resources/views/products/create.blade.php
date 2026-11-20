@@ -20,6 +20,17 @@
         </div>
 
         <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" name="category" class="form-control" required>
+                @foreach ($categories as $category)
+                    <option value="{{ $category }}" @selected(old('category', 'merch') === $category)>
+                        {{ str($category)->replace('_', ' ')->title() }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="form-group">
             <label>Price (₱)</label>
             <input type="number" step="0.01" min="0" name="price" class="form-control" value="{{ old('price') }}" required>
         </div>

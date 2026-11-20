@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Sale extends Model
 {
     protected $fillable = [
+        'transaction_code',
         'product_id',
         'customer_id',
         'sold_by',

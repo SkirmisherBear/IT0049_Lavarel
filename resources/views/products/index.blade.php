@@ -18,6 +18,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Product Name</th>
+                    <th>Category</th>
                     <th>Price</th>
                     <th>Stock</th>
                     <th>Status</th>
@@ -29,6 +30,7 @@
                     <tr>
                         <td>#{{ $product->id }}</td>
                         <td><strong>{{ $product->name }}</strong></td>
+                        <td>{{ str($product->category)->replace('_', ' ')->title() }}</td>
                         <td>₱{{ number_format((float)$product->price, 2) }}</td>
                         <td>{{ $product->stock_quantity }}</td>
                         <td>
@@ -49,7 +51,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" style="text-align:center;padding:30px">No products found.</td>
+                        <td colspan="7" class="empty-state">No products found.</td>
                     </tr>
                 @endforelse
             </tbody>

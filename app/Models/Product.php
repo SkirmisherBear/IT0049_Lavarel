@@ -12,6 +12,7 @@ class Product extends Model
         'price',
         'stock_quantity',
         'image',
+        'category',
     ];
 
     protected function casts(): array
@@ -25,5 +26,10 @@ class Product extends Model
     public function sales(): HasMany
     {
         return $this->hasMany(Sale::class);
+    }
+
+    public function clientOrderItems(): HasMany
+    {
+        return $this->hasMany(ClientOrderItem::class);
     }
 }

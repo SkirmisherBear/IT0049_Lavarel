@@ -21,13 +21,16 @@ class RegisterController extends Controller
             'email.unique' => 'This email is already registered. Please use another email.',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $validated['username'],
             'username' => $validated['username'],
             'email' => $validated['email'],
             'phone' => $validated['phone'],
             'password' => Hash::make($validated['password']),
         ]);
+
+        $user->role = 'client';
+        $user->save();
 
         return redirect()->route('login')
             ->with('status', 'Account created. You can now log in.');

@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -25,6 +26,26 @@ class User extends Authenticatable
         'username',
         'phone',
     ];
+
+    public function memberships(): HasMany
+    {
+        return $this->hasMany(Membership::class);
+    }
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    public function progressEntries(): HasMany
+    {
+        return $this->hasMany(ProgressEntry::class);
+    }
+
+    public function clientOrders(): HasMany
+    {
+        return $this->hasMany(ClientOrder::class);
+    }
 
     /**
      * The attributes that should be hidden for serialization.
