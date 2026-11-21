@@ -258,6 +258,20 @@
             color: #F4EAFE;
             font-size: 12px;
             font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .role-pill {
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #FFFFFF;
+            text-transform: uppercase;
         }
 
         .theme-button {
@@ -741,6 +755,16 @@
             <span class="nav-text">Sales History</span>
         </a>
 
+        @if(auth()->user()?->role === 'admin')
+            <div class="sidebar-label">ADMINISTRATION</div>
+
+            <a href="{{ route('staff.index') }}"
+               class="nav-link {{ request()->routeIs('staff.*') ? 'active' : '' }}">
+                <span class="nav-icon">⚙</span>
+                <span class="nav-text">Staff & Admins</span>
+            </a>
+        @endif
+
         <div class="sidebar-bottom">
             <div class="sidebar-label">ACCOUNT</div>
 
@@ -766,7 +790,8 @@
                 </button>
 
                 <span class="user-name">
-                    {{ auth()->user()->username ?? auth()->user()->name ?? 'Staff' }}
+                    {{ auth()->user()->name ?? auth()->user()->username ?? 'Staff' }}
+                    <span class="role-pill">{{ auth()->user()->role ?? 'staff' }}</span>
                 </span>
             </div>
         </header>

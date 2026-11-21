@@ -12,14 +12,14 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Default staff account (if none exists yet)
-        User::firstOrCreate(
-            ['email' => 'admin@overclock.fit'],
+        User::updateOrCreate(
+            ['email' => env('ADMIN_EMAIL', 'admin@overclock.fit')],
             [
-                'name' => 'Overclock Admin',
-                'username' => 'whaat',
-                'phone' => '09171234567',
-                'password' => Hash::make('password123'),
+                'name'     => env('ADMIN_NAME', 'Overclock Admin'),
+                'username' => env('ADMIN_USERNAME', 'admin@overclock.fit'),
+                'phone'    => env('ADMIN_PHONE', '09171234567'),
+                'role'     => 'admin',
+                'password' => Hash::make(env('ADMIN_PASSWORD', '@ArnoldPaulo123')),
             ]
         );
 

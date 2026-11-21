@@ -9,6 +9,15 @@ use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\StaffController;
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
+    Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
+    Route::patch('/staff/{user}/role', [StaffController::class, 'updateRole'])->name('staff.role');
+    Route::delete('/staff/{user}', [StaffController::class, 'destroy'])->name('staff.destroy');
+});
+
 // Smart Home Redirect: sends logged-in users to their own role dashboard
 Route::get('/', function () {
     if (Auth::check()) {
