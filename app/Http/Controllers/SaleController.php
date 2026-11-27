@@ -12,7 +12,13 @@ class SaleController extends Controller
 {
     public function index()
     {
-        $sales = Sale::with(['product', 'customer', 'staff'])->latest()->get();
+        $sales = Sale::with(['product', 'customer', 'staff'])
+            ->when(auth()->user()->role === 'staff', function ($query) {
+                $query->where('sold_by', auth()->id());
+            })
+            ->latest()
+            ->get();
+
         return view('sales.index', compact('sales'));
     }
 
@@ -20,6 +26,7 @@ class SaleController extends Controller
     {
         $products = Product::where('stock_quantity', '>', 0)->orderBy('name')->get();
         $customers = Customer::orderBy('full_name')->get();
+
         return view('sales.create', compact('products', 'customers'));
     }
 

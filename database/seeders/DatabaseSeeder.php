@@ -12,38 +12,46 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $adminPassword = env('ADMIN_PASSWORD');
+
+        if (blank($adminPassword)) {
+            throw new \RuntimeException('Set ADMIN_PASSWORD before running the database seeder.');
+        }
+
         User::updateOrCreate(
             ['email' => env('ADMIN_EMAIL', 'admin@overclock.fit')],
             [
-                'name'     => env('ADMIN_NAME', 'Overclock Admin'),
+                'name' => env('ADMIN_NAME', 'Overclock Admin'),
                 'username' => env('ADMIN_USERNAME', 'admin@overclock.fit'),
-                'phone'    => env('ADMIN_PHONE', '09171234567'),
-                'role'     => 'admin',
-                'password' => Hash::make(env('ADMIN_PASSWORD', '@ArnoldPaulo123')),
+                'phone' => env('ADMIN_PHONE', '09171234567'),
+                'role' => 'admin',
+                'password' => Hash::make($adminPassword),
             ]
         );
 
-        User::firstOrCreate(
-    ['username' => 'boss'],
-    [
-        'name' => 'Overclock Owner',
-        'email' => 'boss@overclockfitness.ph',
-        'phone' => '09170000001',
-        'password' => Hash::make('password123'),
-        'role' => 'admin',
-    ]
-);
+        if (app()->environment('local')) {
+            User::firstOrCreate(
+                ['username' => 'boss'],
+                [
+                    'name' => 'Overclock Owner',
+                    'email' => 'boss@overclockfitness.ph',
+                    'phone' => '09170000001',
+                    'password' => Hash::make('password123'),
+                    'role' => 'admin',
+                ]
+            );
 
-User::firstOrCreate(
-    ['username' => 'cashier'],
-    [
-        'name' => 'Front Desk Cashier',
-        'email' => 'cashier@overclockfitness.ph',
-        'phone' => '09170000002',
-        'password' => Hash::make('password123'),
-        'role' => 'staff',
-    ]
-);
+            User::firstOrCreate(
+                ['username' => 'cashier'],
+                [
+                    'name' => 'Front Desk Cashier',
+                    'email' => 'cashier@overclockfitness.ph',
+                    'phone' => '09170000002',
+                    'password' => Hash::make('password123'),
+                    'role' => 'staff',
+                ]
+            );
+        }
 
         // Overclock Fitness Products & Gym Passes
         $products = [

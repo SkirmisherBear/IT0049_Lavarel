@@ -15,9 +15,9 @@ class RegisterController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'username' => ['required', 'string', 'max:255', 'unique:users,username'],
+            'username' => ['required', 'string', 'max:100', 'unique:users,username'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'phone' => ['required', 'string', 'max:30'],
+            'phone' => ['required', 'string', 'max:20'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'terms' => ['accepted'],
         ], [
@@ -38,7 +38,7 @@ class RegisterController extends Controller
             'full_name' => $validated['username'],
             'email' => $validated['email'],
             'phone' => $validated['phone'],
-            'qr_token' => 'OC-' . strtoupper(Str::random(10)),
+            'qr_token' => 'OC-'.strtoupper(Str::random(10)),
         ]);
 
         Auth::login($user);

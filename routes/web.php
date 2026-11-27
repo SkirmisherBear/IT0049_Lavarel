@@ -3,13 +3,13 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MemberPortalController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\StaffController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\StaffController;
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
@@ -22,9 +22,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::get('/', function () {
     if (Auth::check()) {
         return match (Auth::user()->role) {
-            'admin'  => redirect()->route('pos.dashboard'),
+            'admin' => redirect()->route('pos.dashboard'),
             'client' => redirect()->route('member.portal'),
-            default  => redirect()->route('pos.dashboard'),
+            default => redirect()->route('pos.dashboard'),
         };
     }
 
@@ -40,6 +40,10 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [LoginController::class, 'store'])->name('login.store');
 });
 
+Route::view('/logout', 'auth.logout')
+    ->middleware('auth')
+    ->name('logout.confirm');
+
 Route::post('/logout', [LoginController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');
@@ -53,37 +57,13 @@ Route::middleware(['auth', 'role:client'])->prefix('member')->name('member.')->g
 
 // STAFF & BOSS POS MODULE ROUTES (Locked from Clients)
 Route::middleware(['auth', 'role:admin,staff'])->group(function () {
-    Route::get('/pos', function () {
-        $todaySales = \App\Models\Sale::whereDate('created_at', today())
-            ->sum('total_price');
-
-        $todayTransactions = \App\Models\Sale::whereDate('created_at', today())
-            ->count();
-
-        $totalProducts = \App\Models\Product::count();
-
-        $lowStock = \App\Models\Product::where('stock_quantity', '<=', 5)
-            ->count();
-
-        $recentSales = \App\Models\Sale::with(['product', 'customer'])
-            ->latest()
-            ->take(5)
-            ->get();
-
-        return view('pos.dashboard', compact(
-            'todaySales',
-            'todayTransactions',
-            'totalProducts',
-            'lowStock',
-            'recentSales'
-        ));
-    })->name('pos.dashboard');
+    Route::get('/pos', [DashboardController::class, 'index'])->name('pos.dashboard');
 
     // Products
-    Route::resource('products', ProductController::class);
+    Route::resource('products', ProductController::class)->except(['show']);
 
     // Customers
-    Route::resource('customers', CustomerController::class);
+    Route::resource('customers', CustomerController::class)->except(['show']);
 
     // Sales
     Route::get('/sales/create', [SaleController::class, 'create'])->name('sales.create');

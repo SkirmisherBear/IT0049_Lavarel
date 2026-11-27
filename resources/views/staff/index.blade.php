@@ -7,7 +7,7 @@
 <div class="page-heading" style="margin-bottom:20px;">
     <div>
         <h1 style="margin:0 0 4px;">Team & Access Control</h1>
-        <p class="muted" style="margin:0;">Add new Admins or Employees (Staff). Changes save directly to SQLite.</p>
+        <p class="muted" style="margin:0;">Admins create staff and admin accounts here. Employees sign in with the email and password you set; client accounts are registered separately.</p>
     </div>
 </div>
 
@@ -23,9 +23,9 @@
     </div>
 @endif
 
-{{-- ADD NEW ADMIN OR EMPLOYEE --}}
+{{-- ADMIN-MANAGED TEAM ACCOUNTS --}}
 <div class="card" style="margin-bottom:24px;">
-    <h3 style="margin:0 0 14px;font-size:15px;">Add Admin or Employee Account</h3>
+    <h3 style="margin:0 0 14px;font-size:15px;">Create a Staff or Admin Account</h3>
     <form method="POST" action="{{ route('staff.store') }}">
         @csrf
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px;">
@@ -43,21 +43,25 @@
             </div>
             <div>
                 <label style="display:block;font-size:11px;margin-bottom:4px;">PHONE</label>
-                <input type="text" name="phone" class="form-control" placeholder="0917...">
+                <input type="tel" name="phone" class="form-control" placeholder="0917..." required>
             </div>
             <div>
                 <label style="display:block;font-size:11px;margin-bottom:4px;">ROLE</label>
                 <select name="role" class="form-control">
-                    <option value="staff">Employee (Staff)</option>
+                    <option value="staff" selected>Employee (Staff)</option>
                     <option value="admin">Admin</option>
                 </select>
             </div>
             <div>
                 <label style="display:block;font-size:11px;margin-bottom:4px;">PASSWORD</label>
-                <input type="password" name="password" class="form-control" placeholder="Min 6 characters" required>
+                <input type="password" name="password" class="form-control" placeholder="At least 8 characters" autocomplete="new-password" required>
+            </div>
+            <div>
+                <label style="display:block;font-size:11px;margin-bottom:4px;">CONFIRM PASSWORD</label>
+                <input type="password" name="password_confirmation" class="form-control" placeholder="Enter the same password" autocomplete="new-password" required>
             </div>
         </div>
-        <button type="submit" class="btn">+ Save Account to Database</button>
+        <button type="submit" class="btn">+ Create Team Login</button>
     </form>
 </div>
 

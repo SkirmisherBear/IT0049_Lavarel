@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -19,13 +20,13 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-    'name',
-    'username',
-    'email',
-    'phone',
-    'password',
-    'role',
-];
+        'name',
+        'username',
+        'email',
+        'phone',
+        'password',
+        'role',
+    ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -36,6 +37,11 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function sales(): HasMany
+    {
+        return $this->hasMany(Sale::class, 'sold_by');
+    }
 
     /**
      * Get the attributes that should be cast.
@@ -49,5 +55,4 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    
 }

@@ -723,7 +723,7 @@
             <div class="brand-name">OVERCLOCK <span>POS</span></div>
         </div>
 
-        <div class="sidebar-label">WORKSPACE</div>
+        <div class="sidebar-label">{{ auth()->user()?->role === 'admin' ? 'MANAGEMENT' : 'STAFF WORKSPACE' }}</div>
 
         <a href="{{ route('pos.dashboard') }}"
            class="nav-link {{ request()->routeIs('pos.dashboard') ? 'active' : '' }}">
@@ -752,7 +752,7 @@
         <a href="{{ route('sales.index') }}"
            class="nav-link {{ request()->routeIs('sales.index') ? 'active' : '' }}">
             <span class="nav-icon">▧</span>
-            <span class="nav-text">Sales History</span>
+            <span class="nav-text">{{ auth()->user()?->role === 'admin' ? 'All Sales' : 'My Sales' }}</span>
         </a>
 
         @if(auth()->user()?->role === 'admin')
