@@ -60,6 +60,27 @@ test('account roles cannot enter another role workspace', function (string $role
     'staff cannot enter client tools' => ['staff', '/client/store'],
 ]);
 
+test('a client can save their profile and return to the profile page', function () {
+    $user = createMergeUser('client');
+
+    $this->actingAs($user)->put('/client/profile', [
+        'username' => 'updated-member',
+        'email' => 'updated-member@example.test',
+        'phone' => '09170000003',
+    ])->assertSessionHasNoErrors()
+        ->assertRedirect(route('client.profile.edit'))
+        ->assertSessionHas('success', 'Profile updated.');
+
+    $this->assertDatabaseHas('users', [
+        'id' => $user->id,
+        'name' => 'updated-member',
+        'username' => 'updated-member',
+        'email' => 'updated-member@example.test',
+        'phone' => '09170000003',
+        'role' => 'client',
+    ]);
+});
+
 test('registration creates a client and linked customer even when an admin role is submitted', function () {
     $this->post('/register', [
         'username' => 'new-member',

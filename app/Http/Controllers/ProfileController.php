@@ -27,6 +27,6 @@ class ProfileController extends Controller
         $user->name = $validated['username'];
         $user->save();
 
-        return redirect()->route('client.profile')->with('success', 'Profile updated.');
+        return redirect()->route('client.profile.edit')->with('success', 'Profile updated.');
     }
 }
