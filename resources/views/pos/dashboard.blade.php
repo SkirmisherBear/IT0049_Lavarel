@@ -97,4 +97,13 @@
     </div>
 </div>
 
+@if(auth()->user()?->role === 'client')
+    <div class="sidebar-label">MEMBER PORTAL</div>
+
+    <a href="{{ route('member.portal') }}"
+       class="nav-link {{ request()->routeIs('member.portal') ? 'active' : '' }}">
+        <span class="nav-icon">🪪</span>
+        <span class="nav-text">My QR Pass & Hub</span>
+    </a>
+@endif
 @endsection

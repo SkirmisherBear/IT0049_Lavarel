@@ -21,10 +21,11 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'email',
-        'password',
         'username',
+        'email',
         'phone',
+        'password',
+        'role',
     ];
 
     public function memberships(): HasMany
@@ -57,6 +58,11 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    public function sales(): HasMany
+    {
+        return $this->hasMany(Sale::class, 'sold_by');
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -69,5 +75,4 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    
 }

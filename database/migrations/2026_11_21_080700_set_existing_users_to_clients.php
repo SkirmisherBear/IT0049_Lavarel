@@ -7,10 +7,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::table('users')->update(['role' => 'client']);
+        DB::table('users')->whereNull('role')->update(['role' => 'client']);
     }
 
-    public function down(): void
-    {
-    }
+    public function down(): void {}
 };

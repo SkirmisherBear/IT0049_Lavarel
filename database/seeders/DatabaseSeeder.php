@@ -33,6 +33,30 @@ class DatabaseSeeder extends Seeder
         $admin->role = 'admin';
         $admin->save();
 
+        if (app()->environment('local')) {
+            User::firstOrCreate(
+                ['username' => 'boss'],
+                [
+                    'name' => 'Overclock Owner',
+                    'email' => 'boss@overclockfitness.ph',
+                    'phone' => '09170000001',
+                    'password' => Hash::make('password123'),
+                    'role' => 'admin',
+                ]
+            );
+
+            User::firstOrCreate(
+                ['username' => 'cashier'],
+                [
+                    'name' => 'Front Desk Cashier',
+                    'email' => 'cashier@overclockfitness.ph',
+                    'phone' => '09170000002',
+                    'password' => Hash::make('password123'),
+                    'role' => 'staff',
+                ]
+            );
+        }
+
         // Overclock Fitness Products & Gym Passes
         $products = [
             ['name' => 'Stock Settings - Monthly Gym Pass', 'price' => 1500.00, 'stock_quantity' => 50, 'category' => 'month_pass'],

@@ -23,9 +23,11 @@ class LoginController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->route(
-            $request->user()->role === 'client' ? 'client.dashboard' : 'pos.dashboard'
-        );
+        return match ($request->user()->role) {
+            'admin' => redirect()->route('pos.dashboard'),
+            'client' => redirect()->route('member.portal'),
+            default => redirect()->route('pos.dashboard'),
+        };
     }
 
     public function destroy(Request $request)

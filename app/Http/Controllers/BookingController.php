@@ -26,7 +26,7 @@ class BookingController extends Controller
             'focus' => ['nullable', 'string', 'max:120'],
         ]);
 
-        $request->user()->bookings()->create($validated);
+        $request->user()->bookings()->create([...$validated, 'status' => 'pending']);
 
         return redirect()->route('client.bookings')->with('success', 'Your training session request was submitted.');
     }

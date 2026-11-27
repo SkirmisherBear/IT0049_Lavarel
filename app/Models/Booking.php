@@ -12,6 +12,10 @@ class Booking extends Model
         'trainer_level',
         'scheduled_at',
         'focus',
+        'customer_id',
+        'session_type',
+        'booking_date',
+        'time_slot',
         'status',
     ];
 
@@ -19,11 +23,17 @@ class Booking extends Model
     {
         return [
             'scheduled_at' => 'datetime',
+            'booking_date' => 'date',
         ];
     }
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
     }
 }
